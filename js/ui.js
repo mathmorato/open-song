@@ -87,9 +87,18 @@ const UiManager = {
         badge.className = "processor-badge";
 
         if (status === "connected") {
-            badge.classList.add("status-connected");
-            label.textContent = "Processador conectado";
-            badge.title = `Conectado a ${OPEN_SONG_CONFIG.localProcessorUrl} (${details?.version || "v.1.0.0"})`;
+            if (details && (!details.demucs_installed || !details.ffmpeg_installed)) {
+                badge.classList.add("status-checking");
+                label.textContent = "Processador (Ajustes pendentes)";
+                const missing = [];
+                if (!details.demucs_installed) missing.push("Demucs");
+                if (!details.ffmpeg_installed) missing.push("FFmpeg");
+                badge.title = `Conectado, porém falta: ${missing.join(" e ")}. Clique para ajuda.`;
+            } else {
+                badge.classList.add("status-connected");
+                label.textContent = "Processador conectado";
+                badge.title = `Conectado a ${OPEN_SONG_CONFIG.localProcessorUrl} (${details?.version || OPEN_SONG_CONFIG.version})`;
+            }
         } else if (status === "disconnected") {
             badge.classList.add("status-disconnected");
             label.textContent = "Processador desconectado";

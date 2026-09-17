@@ -55,10 +55,22 @@ class ProcessorController {
             return;
         }
 
-        // Verifica saúde do processador antes de enviar
+        // Verifica saúde do processador e dependências antes de enviar
         const health = await ApiClient.checkHealth();
         if (!health.ok) {
             UiManager.showToast("Processador local não está conectado. Inicie o servidor Python.", "danger");
+            UiManager.openModal("modalHelp");
+            return;
+        }
+
+        if (health.data && !health.data.demucs_installed) {
+            UiManager.showToast("O Demucs não está instalado no ambiente Python.", "warning");
+            UiManager.openModal("modalHelp");
+            return;
+        }
+
+        if (health.data && !health.data.ffmpeg_installed) {
+            UiManager.showToast("O FFmpeg não foi encontrado no PATH do sistema.", "warning");
             UiManager.openModal("modalHelp");
             return;
         }

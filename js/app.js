@@ -1,6 +1,6 @@
 /**
  * Open Song - Application Bootstrap
- * Versão: v.1.0.1
+ * Versão: v.1.0.2
  * Ponto de entrada, coordenação de eventos globais e monitoramento de conexão.
  */
 

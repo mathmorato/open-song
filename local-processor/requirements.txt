@@ -1,3 +1,5 @@
 demucs>=4.0.0
+numpy>=1.26.0
 setuptools
-basic-pitch
+wheel
+basic-pitch; python_version < '3.12'

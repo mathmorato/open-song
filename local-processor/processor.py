@@ -1,6 +1,6 @@
 """
 Open Song - Local Audio Processor Engine
-Versão: v.1.0.1
+Versão: v.1.0.2
 Gerencia a fila de separação de áudio, execução segura do Demucs,
 monitoramento de progresso e exportação de stems.
 """
@@ -87,18 +87,52 @@ class DemucsProcessor:
         self.worker_thread = threading.Thread(target=self._process_queue, daemon=True)
         self.worker_thread.start()
 
+    def get_python_runner(self) -> str:
+        """
+        Retorna o executável Python a ser utilizado para rodar o Demucs.
+        Se existir um .venv na raiz do projeto ou no diretório local-processor, prioriza o venv.
+        """
+        candidates = [
+            self.base_dir / ".venv" / "Scripts" / "python.exe",
+            self.base_dir / ".venv" / "bin" / "python",
+            self.base_dir / "local-processor" / ".venv" / "Scripts" / "python.exe",
+            self.base_dir / "local-processor" / ".venv" / "bin" / "python"
+        ]
+        for c in candidates:
+            if c.is_file():
+                return str(c)
+        return sys.executable
+
     def check_demucs_installed(self) -> bool:
-        """Verifica se o pacote demucs está acessível no ambiente Python atual."""
+        """Verifica se o pacote demucs está acessível no ambiente Python virtual ou atual."""
         try:
-            cmd = [sys.executable, "-m", "demucs.separate", "--help"]
-            res = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=8)
+            python_bin = self.get_python_runner()
+            cmd = [python_bin, "-c", "import demucs"]
+            res = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=12)
             return res.returncode == 0
         except Exception:
             return False
 
     def check_ffmpeg_installed(self) -> bool:
-        """Verifica se o binário ffmpeg está acessível no PATH."""
-        return shutil.which("ffmpeg") is not None
+        """Verifica se o binário ffmpeg está acessível no PATH ou em diretórios conhecidos (ex: winget)."""
+        if shutil.which("ffmpeg") is not None:
+            return True
+        # Verifica locais comuns de instalação no Windows (ex: winget Gyan.FFmpeg)
+        if os.name == "nt":
+            local_app_data = os.environ.get("LOCALAPPDATA", "")
+            program_files = os.environ.get("ProgramFiles", "")
+            winget_locs = [
+                Path(local_app_data) / "Microsoft" / "WinGet" / "Packages",
+                Path(program_files) / "FFmpeg" / "bin",
+            ]
+            for loc in winget_locs:
+                if loc.is_dir():
+                    matches = list(loc.glob("**/ffmpeg.exe"))
+                    if matches:
+                        ffmpeg_dir = str(matches[0].parent)
+                        os.environ["PATH"] = f"{ffmpeg_dir};{os.environ.get('PATH', '')}"
+                        return True
+        return False
 
     def create_job(self, original_filename: str, file_bytes: bytes, options: dict) -> AudioJob:
         """Cria um novo job de processamento, salva o arquivo de entrada e enfileira."""
@@ -248,8 +282,25 @@ class DemucsProcessor:
         except ValueError:
             overlap = "0.25"
 
+        python_bin = self.get_python_runner()
+
+        # Validação preventiva de dependências antes de iniciar o processo
+        if not self.check_demucs_installed():
+            job.status = "failed"
+            job.error = "O Demucs não está instalado no ambiente Python. Execute 'local-processor\\start.bat' ou rode 'pip install -r local-processor\\requirements.txt'."
+            job.message = "Demucs não instalado."
+            logger.error(f"Job {job.job_id}: {job.error}")
+            return
+
+        if not self.check_ffmpeg_installed():
+            job.status = "failed"
+            job.error = "O FFmpeg não foi encontrado no PATH do sistema. Instale o FFmpeg (ex: winget install Gyan.FFmpeg) para que o Demucs consiga processar o áudio."
+            job.message = "FFmpeg não encontrado."
+            logger.error(f"Job {job.job_id}: {job.error}")
+            return
+
         cmd = [
-            sys.executable,
+            python_bin,
             "-m", "demucs.separate",
             "-n", model,
             "--shifts", shifts,
@@ -258,7 +309,7 @@ class DemucsProcessor:
             job.input_path
         ]
 
-        logger.info(f"Comando Demucs seguro: {' '.join(cmd)}")
+        logger.info(f"Comando Demucs seguro ({python_bin}): {' '.join(cmd)}")
         
         try:
             # Inicia o processo com pipe de saída
@@ -273,6 +324,7 @@ class DemucsProcessor:
 
             # Regex para capturar porcentagem de barras de progresso (ex: 45%|...|)
             progress_pattern = re.compile(r'(\d+)%')
+            captured_output = []
 
             if job.process.stdout:
                 for line in iter(job.process.stdout.readline, ''):
@@ -281,6 +333,10 @@ class DemucsProcessor:
                         
                     clean_line = line.strip()
                     if clean_line:
+                        captured_output.append(clean_line)
+                        if len(captured_output) > 20:
+                            captured_output.pop(0)
+
                         match = progress_pattern.search(clean_line)
                         if match:
                             val = int(match.group(1))
@@ -306,9 +362,10 @@ class DemucsProcessor:
 
             if return_code != 0:
                 job.status = "failed"
-                job.error = f"O processo do Demucs encerrou com código {return_code}. Verifique se o FFmpeg e Demucs estão configurados corretamente."
+                tail_err = "\n".join(captured_output[-3:]) if captured_output else ""
+                job.error = f"O processo do Demucs encerrou com código {return_code}. {tail_err}".strip()
                 job.message = "Falha no processamento."
-                logger.error(f"Job {job.job_id} falhou com código {return_code}")
+                logger.error(f"Job {job.job_id} falhou com código {return_code}: {tail_err}")
                 return
 
             # Coleta stems gerados
