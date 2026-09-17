@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Open Song • Separação Inteligente de Faixas de Áudio</title>
+  <meta name="description" content="Separação de faixas de áudio (Vocals, Drums, Bass, Other) com inteligência artificial Demucs. Interface web para GitHub Pages com processamento 100% local." />
+  
+  <!-- Estilos Modulares -->
+  <link rel="stylesheet" href="./css/app.css" />
+  <link rel="stylesheet" href="./css/player.css" />
+  <link rel="stylesheet" href="./css/mixer.css" />
+  <link rel="stylesheet" href="./css/stems.css" />
+  <link rel="stylesheet" href="./css/responsive.css" />
+</head>
+<body>
+
+  <!-- Barra de Navegação -->
+  <header class="app-header">
+    <nav class="navbar" aria-label="Navegação Principal">
+      <a href="./" class="brand-container" title="Open Song - Início">
+        <div class="brand-logo" aria-hidden="true">
+          <!-- Logo Vetorial -->
+          <svg viewBox="0 0 40 40" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="20" cy="20" r="18" stroke-dasharray="2 4" opacity="0.4" />
+            <path d="M 8 20 C 12 12, 16 12, 20 20 C 24 28, 28 28, 32 20" stroke="currentColor" opacity="0.9" />
+            <path d="M 8 20 C 14 26, 18 26, 20 20 C 22 14, 26 14, 32 20" stroke="currentColor" opacity="0.7" />
+            <line x1="14" y1="15" x2="14" y2="25" stroke-width="2.2" />
+            <line x1="20" y1="9" x2="20" y2="31" stroke-width="2.5" />
+            <line x1="26" y1="13" x2="26" y2="27" stroke-width="2.2" />
+          </svg>
+        </div>
+        <div class="brand-title">
+          Open Song
+          <span class="brand-tag">AI STEMS</span>
+        </div>
+      </a>
+
+      <div class="nav-actions">
+        <!-- Indicador de Status do Processador Local -->
+        <button type="button" id="processorBadge" class="processor-badge status-checking" aria-label="Status do Processador Local">
+          <span class="status-dot" aria-hidden="true"></span>
+          <span id="processorStatusText">Verificando...</span>
+        </button>
+
+        <!-- Histórico -->
+        <button type="button" id="btnHistory" class="btn btn-icon btn-outline" title="Histórico de Músicas" aria-label="Histórico de Músicas">
+          <svg class="icon"><use href="assets/icons/icons.svg#icon-clock"></use></svg>
+        </button>
+
+        <!-- Configurações -->
+        <button type="button" id="btnSettings" class="btn btn-icon btn-outline" title="Configurações do Processador" aria-label="Configurações">
+          <svg class="icon"><use href="assets/icons/icons.svg#icon-settings"></use></svg>
+        </button>
+
+        <!-- Alternador de Tema Dark/Light -->
+        <button type="button" id="btnToggleTheme" class="btn btn-icon btn-outline" title="Alternar Tema (Dark / Light)" aria-label="Alternar Tema">
+          <svg class="icon"><use href="assets/icons/icons.svg#icon-sun"></use></svg>
+        </button>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Conteúdo Principal -->
+  <main class="main-content" id="mainContent">
+
+    <!-- Seção de Importação / Upload -->
+    <section id="uploadHero" class="upload-hero" aria-labelledby="uploadHeading">
+      <input type="file" id="fileInput" accept=".mp3,.wav,.flac,.ogg,audio/*" style="display: none;" />
+
+      <div class="upload-area" id="uploadArea" tabindex="0" role="button" aria-label="Adicionar música para separar faixas">
+        <div class="upload-icon-container" aria-hidden="true">
+          <svg class="icon" style="width: 28px; height: 28px;"><use href="assets/icons/icons.svg#icon-upload"></use></svg>
+        </div>
+        <h1 id="uploadHeading" class="upload-title">Adicionar música</h1>
+        <p class="upload-subtitle">Arraste seu arquivo de áudio aqui ou clique para selecionar</p>
+        <div class="format-badges" aria-label="Formatos suportados">
+          <span class="badge-tag">MP3</span>
+          <span class="badge-tag">WAV</span>
+          <span class="badge-tag">FLAC</span>
+          <span class="badge-tag">OGG</span>
+        </div>
+      </div>
+
+      <!-- Card com Informações do Arquivo Selecionado -->
+      <div id="fileSelectedCard" class="file-card" style="display: none;">
+        <div class="file-info">
+          <div class="file-icon-box" aria-hidden="true">
+            <svg class="icon"><use href="assets/icons/icons.svg#icon-music"></use></svg>
+          </div>
+          <div>
+            <div id="fileMetaName" class="file-meta-name">Minha Música.mp3</div>
+            <div id="fileMetaSub" class="file-meta-sub">04:32 • MP3 • 8,4 MB</div>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 0.6rem; align-items: center; flex-wrap: wrap;">
+          <button type="button" id="btnChangeFile" class="btn btn-outline" title="Trocar arquivo selecionado">
+            Trocar
+          </button>
+          <button type="button" id="btnSeparate" class="btn btn-primary" title="Iniciar separação com Demucs">
+            <svg class="icon"><use href="assets/icons/icons.svg#icon-sliders"></use></svg>
+            Separar faixas
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Painel de Progresso do Processamento -->
+    <section id="processingPanel" class="processing-panel" style="display: none;" aria-live="polite">
+      <div class="progress-header">
+        <div class="progress-title">Separando música</div>
+        <div id="progressPct" class="progress-pct">0%</div>
+      </div>
+
+      <div class="progress-track" aria-hidden="true">
+        <div id="progressBar" class="progress-bar"></div>
+      </div>
+
+      <div id="progressStatus" class="progress-status-text">
+        Iniciando processamento com inteligência artificial...
+      </div>
+
+      <button type="button" id="btnCancelProcess" class="btn btn-danger" title="Cancelar processamento atual">
+        <svg class="icon"><use href="assets/icons/icons.svg#icon-x"></use></svg>
+        Cancelar
+      </button>
+    </section>
+
+    <!-- Seção de Resultados: Player, Stems e Mixer -->
+    <section id="resultsSection" style="display: none; flex-direction: column; gap: 2rem;">
+      
+      <!-- Player Global e Comparador com Música Original -->
+      <div class="player-panel" aria-label="Player Global">
+        <div class="player-header">
+          <div class="player-track-info">
+            <span class="player-badge">Tocando</span>
+            <h2 id="resultsSongTitle" class="player-title">Faixa Selecionada</h2>
+          </div>
+
+          <!-- Alternador Stems vs Original -->
+          <div class="player-mode-switch" role="tablist">
+            <button type="button" id="btnModeStems" class="mode-btn active" role="tab" aria-selected="true" title="Ouvir as faixas separadas pelo mixer">
+              Stems
+            </button>
+            <button type="button" id="btnModeOriginal" class="mode-btn" role="tab" aria-selected="false" title="Ouvir a música original para comparação">
+              Original
+            </button>
+          </div>
+        </div>
+
+        <div class="player-main-controls">
+          <!-- Botão Master Play/Pause -->
+          <div class="playback-buttons">
+            <button type="button" id="btnPlayMaster" class="btn-play-master" title="Reproduzir / Pausar (Espaço)" aria-label="Reproduzir">
+              <svg class="icon" style="width: 22px; height: 22px;"><use href="assets/icons/icons.svg#icon-play"></use></svg>
+            </button>
+          </div>
+
+          <!-- Timeline e Scrubber Sincronizado -->
+          <div class="timeline-container">
+            <span id="timeDisplay" class="time-display">00:00 / 00:00</span>
+            <div id="scrubberTrack" class="scrubber-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" tabindex="0" title="Avançar / Retroceder na música">
+              <div id="scrubberFill" class="scrubber-fill"></div>
+            </div>
+          </div>
+
+          <!-- Controle Master de Volume -->
+          <div class="volume-control-group">
+            <svg class="icon" style="color: var(--text-secondary);"><use href="assets/icons/icons.svg#icon-volume"></use></svg>
+            <input type="range" id="masterVolumeSlider" class="volume-slider" min="0" max="100" value="100" title="Volume Geral" aria-label="Volume Geral" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Barra de Ferramentas dos Stems -->
+      <div class="stems-toolbar">
+        <div class="stems-title-group">
+          <h2 class="stems-heading">Faixas da Música</h2>
+          <span id="stemsCountTag" class="stems-count-tag">4 faixas disponíveis</span>
+        </div>
+
+        <div class="stems-actions-group">
+          <button type="button" id="btnSelectAll" class="btn btn-outline" title="Selecionar todas as faixas">
+            Selecionar todas
+          </button>
+          <button type="button" id="btnClearSelection" class="btn btn-outline" title="Limpar seleção de faixas">
+            Limpar seleção
+          </button>
+          <button type="button" id="btnPlaySelected" class="btn btn-outline" title="Reproduzir somente faixas selecionadas">
+            <svg class="icon"><use href="assets/icons/icons.svg#icon-play"></use></svg>
+            Reproduzir selecionadas
+          </button>
+          <button type="button" id="btnDownloadSelected" class="btn btn-outline" title="Baixar faixas selecionadas compactadas em ZIP">
+            <svg class="icon"><use href="assets/icons/icons.svg#icon-archive"></use></svg>
+            Baixar selecionadas
+          </button>
+          <button type="button" id="btnDownloadAll" class="btn btn-primary" title="Baixar todas as faixas em ZIP">
+            <svg class="icon"><use href="assets/icons/icons.svg#icon-archive"></use></svg>
+            Baixar todas
+          </button>
+        </div>
+      </div>
+
+      <!-- Grade de Cards das Faixas (Vocals, Drums, Bass, Other, etc.) -->
+      <div id="stemsGrid" class="stems-grid" aria-label="Lista de Faixas Separadas">
+        <!-- Renderizado dinamicamente pelo StemManager -->
+      </div>
+
+      <!-- Mixer Integrado (Mesa de Áudio) -->
+      <div class="mixer-panel" aria-label="Mesa de Mixagem Integrada">
+        <div class="mixer-header">
+          <div class="mixer-title-group">
+            <svg class="icon" style="color: var(--accent-primary);"><use href="assets/icons/icons.svg#icon-sliders"></use></svg>
+            <h3 class="mixer-title">Mesa de Mixagem</h3>
+          </div>
+
+          <div class="mixer-actions">
+            <button type="button" id="btnExportMix" class="btn btn-primary" title="Exportar novo arquivo WAV com o balanço de volumes atual">
+              <svg class="icon"><use href="assets/icons/icons.svg#icon-download"></use></svg>
+              Exportar mix
+            </button>
+          </div>
+        </div>
+
+        <!-- Canais de Áudio da Mesa -->
+        <div id="mixerBoard" class="mixer-board">
+          <!-- Renderizado dinamicamente pelo StemManager -->
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- Rodapé com Aviso de Privacidade e Versão -->
+  <footer class="app-footer">
+    <div class="footer-inner">
+      <div class="privacy-notice">
+        <svg class="icon" style="color: var(--color-success);"><use href="assets/icons/icons.svg#icon-shield"></use></svg>
+        <span>Seu áudio é processado localmente. Os arquivos não são enviados automaticamente para servidores externos.</span>
+      </div>
+      <div class="footer-version">
+        Open Song <span id="appVersionFooter">v.1.0.0</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Modal: Ajuda / Instruções de Instalação do Processador Local -->
+  <div id="modalHelp" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modalHelpTitle">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="modalHelpTitle" class="modal-title">Open Song Local Processor</h3>
+        <button type="button" class="btn btn-icon btn-outline btn-close-modal" aria-label="Fechar modal">
+          <svg class="icon"><use href="assets/icons/icons.svg#icon-x"></use></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p style="color: var(--text-secondary);">
+          O processador local é necessário para separar as faixas de áudio no seu computador usando inteligência artificial (Demucs).
+        </p>
+
+        <div>
+          <h4 style="font-size: 0.95rem; margin-bottom: 0.5rem; font-weight: 600;">Como Iniciar no Windows:</h4>
+          <div class="code-box">
+            <span>local-processor\start.bat</span>
+          </div>
+        </div>
+
+        <div>
+          <h4 style="font-size: 0.95rem; margin-bottom: 0.5rem; font-weight: 600;">Como Iniciar no Linux / macOS:</h4>
+          <div class="code-box">
+            <span>cd local-processor &amp;&amp; ./start.sh</span>
+          </div>
+        </div>
+
+        <div>
+          <h4 style="font-size: 0.95rem; margin-bottom: 0.5rem; font-weight: 600;">Requisitos do Sistema:</h4>
+          <ul style="padding-left: 1.25rem; color: var(--text-secondary); font-size: 0.88rem; display: flex; flex-direction: column; gap: 0.35rem;">
+            <li>Python 3.10 ou superior</li>
+            <li>FFmpeg instalado e disponível no PATH</li>
+            <li>Pacote Demucs (instalado via <code>pip install -r requirements.txt</code>)</li>
+          </ul>
+        </div>
+
+        <p style="font-size: 0.82rem; color: var(--text-muted);">
+          Assim que o servidor for iniciado em <code>http://127.0.0.1:8765</code>, a página detectará a conexão automaticamente.
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary btn-close-modal">Entendi</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Configurações do Processador -->
+  <div id="modalSettings" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modalSettingsTitle">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="modalSettingsTitle" class="modal-title">Configurações</h3>
+        <button type="button" class="btn btn-icon btn-outline btn-close-modal" aria-label="Fechar modal">
+          <svg class="icon"><use href="assets/icons/icons.svg#icon-x"></use></svg>
+        </button>
+      </div>
+      <form id="formSettings">
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="inputProcessorUrl" class="form-label">URL do Processador Local</label>
+            <input type="url" id="inputProcessorUrl" class="form-input" required value="http://127.0.0.1:8765" />
+            <span style="font-size: 0.75rem; color: var(--text-muted);">Padrão: http://127.0.0.1:8765</span>
+          </div>
+
+          <div class="form-group">
+            <label for="selectModel" class="form-label">Modelo Demucs</label>
+            <select id="selectModel" class="form-input">
+              <option value="htdemucs" selected>htdemucs (Padrão - Alta Qualidade e Velocidade)</option>
+              <option value="htdemucs_ft">htdemucs_ft (Fine-tuned)</option>
+              <option value="mdx_extra">mdx_extra (Extra)</option>
+            </select>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div class="form-group">
+              <label for="inputShifts" class="form-label">Shifts (Qualidade)</label>
+              <input type="number" id="inputShifts" class="form-input" min="1" max="10" value="10" />
+            </div>
+            <div class="form-group">
+              <label for="inputOverlap" class="form-label">Overlap (0.1 - 0.5)</label>
+              <input type="number" id="inputOverlap" class="form-input" min="0.1" max="0.5" step="0.05" value="0.25" />
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline btn-close-modal">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Salvar Configurações</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Histórico Local -->
+  <div id="modalHistory" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modalHistoryTitle">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="modalHistoryTitle" class="modal-title">Histórico de Músicas</h3>
+        <button type="button" class="btn btn-icon btn-outline btn-close-modal" aria-label="Fechar modal">
+          <svg class="icon"><use href="assets/icons/icons.svg#icon-x"></use></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div id="historyList" style="display: flex; flex-direction: column;">
+          <!-- Itens renderizados dinamicamente -->
+        </div>
+      </div>
+      <div class="modal-footer" style="justify-content: space-between;">
+        <button type="button" id="btnClearHistory" class="btn btn-danger btn-outline">Limpar Histórico</button>
+        <button type="button" class="btn btn-primary btn-close-modal">Fechar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Container de Notificações Toast -->
+  <div id="toastContainer" class="toast-container" aria-live="polite"></div>
+
+  <!-- Scripts Modulares -->
+  <script src="./js/config.js"></script>
+  <script src="./js/storage.js"></script>
+  <script src="./js/api.js"></script>
+  <script src="./js/ui.js"></script>
+  <script src="./js/audio-player.js"></script>
+  <script src="./js/audio-mixer.js"></script>
+  <script src="./js/stem-manager.js"></script>
+  <script src="./js/downloader.js"></script>
+  <script src="./js/exporter.js"></script>
+  <script src="./js/history.js"></script>
+  <script src="./js/processor.js"></script>
+  <script src="./js/app.js"></script>
+</body>
+</html>

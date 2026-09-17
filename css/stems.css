@@ -1,0 +1,264 @@
+/**
+ * Open Song - Stem Cards Styles
+ * Versão: v.1.0.0
+ * Layout modular para faixas separadas, suporte dinâmico a N faixas e acentos visuais.
+ */
+
+.stems-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.stems-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.stems-title-group {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+}
+
+.stems-heading {
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+
+.stems-count-tag {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.stems-actions-group {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+/* Stems Grid */
+.stems-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.25rem;
+}
+
+/* Individual Stem Card */
+.stem-card {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--transition-fast), border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.stem-card:hover {
+  border-color: var(--border-hover);
+  box-shadow: var(--shadow-md);
+}
+
+/* Accent top border strip */
+.stem-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background-color: var(--stem-accent, var(--accent-primary));
+}
+
+/* Stem Specific Accent Themes */
+.stem-card[data-stem="vocals"] {
+  --stem-accent: var(--stem-vocals);
+}
+
+.stem-card[data-stem="drums"] {
+  --stem-accent: var(--stem-drums);
+}
+
+.stem-card[data-stem="bass"] {
+  --stem-accent: var(--stem-bass);
+}
+
+.stem-card[data-stem="other"] {
+  --stem-accent: var(--stem-other);
+}
+
+/* Card Header */
+.stem-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.stem-ident {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.stem-checkbox-wrapper {
+  display: flex;
+  align-items: center;
+}
+
+.stem-checkbox {
+  width: 17px;
+  height: 17px;
+  cursor: pointer;
+  accent-color: var(--stem-accent, var(--accent-primary));
+}
+
+.stem-icon-box {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-md);
+  background-color: rgba(255, 255, 255, 0.05);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--stem-accent, var(--accent-primary));
+}
+
+.stem-name {
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.stem-size {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+/* Waveform Visualizer mockup in card */
+.stem-waveform {
+  height: 36px;
+  background-color: var(--bg-card);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 8px;
+  gap: 3px;
+  overflow: hidden;
+  opacity: 0.75;
+}
+
+.wave-bar {
+  flex: 1;
+  background-color: var(--stem-accent, var(--accent-primary));
+  border-radius: 2px;
+  min-height: 4px;
+  transition: height 0.2s ease;
+}
+
+.stem-card.playing .stem-waveform {
+  opacity: 1;
+}
+
+/* Volume Slider */
+.stem-volume-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.stem-vol-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  min-width: 45px;
+}
+
+.stem-volume-slider {
+  flex: 1;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 5px;
+  background: var(--bg-elevated);
+  border-radius: var(--radius-full);
+  outline: none;
+  cursor: pointer;
+}
+
+.stem-volume-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--stem-accent, var(--accent-primary));
+  cursor: pointer;
+  border: 2px solid var(--bg-surface);
+}
+
+.stem-vol-value {
+  font-family: monospace;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  min-width: 32px;
+  text-align: right;
+}
+
+/* Card Control Buttons */
+.stem-buttons-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn-stem-toggle {
+  flex: 1;
+  padding: 0.45rem 0.6rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border-radius: var(--radius-sm);
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.btn-stem-toggle:hover {
+  background-color: var(--bg-elevated);
+  color: var(--text-primary);
+}
+
+/* Mute Active State */
+.btn-stem-toggle.mute-active {
+  background-color: rgba(239, 68, 68, 0.2);
+  border-color: var(--color-danger);
+  color: var(--color-danger);
+  box-shadow: 0 0 8px rgba(239, 68, 68, 0.3);
+}
+
+/* Solo Active State */
+.btn-stem-toggle.solo-active {
+  background-color: rgba(16, 185, 129, 0.2);
+  border-color: var(--color-success);
+  color: var(--color-success);
+  box-shadow: 0 0 8px rgba(16, 185, 129, 0.3);
+}
+
+/* Dimmed / Inaudible State */
+.stem-card.inaudible {
+  opacity: 0.45;
+  filter: grayscale(40%);
+}

@@ -1,0 +1,152 @@
+/**
+ * Open Song - Mixer Styles
+ * Versão: v.1.0.0
+ * Interface de mixer estilo mesa de áudio profissional (DAW) para balanceamento conjunto.
+ */
+
+.mixer-panel {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  box-shadow: var(--shadow-md);
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.mixer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.mixer-title-group {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.mixer-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+.mixer-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+/* Mixer Board Channels */
+.mixer-board {
+  display: flex;
+  align-items: stretch;
+  gap: 1rem;
+  overflow-x: auto;
+  padding-bottom: 0.5rem;
+}
+
+.mixer-channel {
+  flex: 1;
+  min-width: 140px;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 1rem 0.85rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.85rem;
+  position: relative;
+  transition: border-color var(--transition-fast);
+}
+
+.mixer-channel:hover {
+  border-color: var(--border-hover);
+}
+
+.channel-label {
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--channel-color, var(--text-primary));
+  text-align: center;
+}
+
+/* Fader Control */
+.channel-fader-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  width: 100%;
+}
+
+.channel-fader {
+  width: 100%;
+  height: 6px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: var(--bg-elevated);
+  border-radius: var(--radius-full);
+  outline: none;
+  cursor: pointer;
+}
+
+.channel-fader::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--channel-color, var(--accent-primary));
+  cursor: pointer;
+  border: 2px solid var(--bg-surface);
+}
+
+.channel-fader-val {
+  font-family: monospace;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+/* Mini Buttons Mute / Solo */
+.channel-switches {
+  display: flex;
+  width: 100%;
+  gap: 0.4rem;
+}
+
+.btn-mini-toggle {
+  flex: 1;
+  padding: 0.35rem 0.45rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  border-radius: var(--radius-sm);
+  background-color: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  cursor: pointer;
+  text-align: center;
+  transition: all var(--transition-fast);
+}
+
+.btn-mini-toggle:hover {
+  color: var(--text-primary);
+}
+
+.btn-mini-toggle.active-m {
+  background-color: rgba(239, 68, 68, 0.2);
+  border-color: var(--color-danger);
+  color: var(--color-danger);
+}
+
+.btn-mini-toggle.active-s {
+  background-color: rgba(16, 185, 129, 0.2);
+  border-color: var(--color-success);
+  color: var(--color-success);
+}

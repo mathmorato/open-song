@@ -1,0 +1,119 @@
+/**
+ * Open Song - Responsive Adaptations
+ * Versão: v.1.0.0
+ * Garante layout fluido, ausência de sobreposições e acessibilidade em telas móveis.
+ */
+
+@media (max-width: 1024px) {
+  .main-content {
+    padding: 1.5rem 1rem 3rem;
+    gap: 1.5rem;
+  }
+
+  .mixer-board {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .navbar {
+    padding: 0.75rem 1rem;
+  }
+
+  .brand-title {
+    font-size: 1.1rem;
+  }
+
+  .upload-hero {
+    padding: 1.75rem 1rem;
+  }
+
+  .upload-area {
+    padding: 2rem 1rem;
+  }
+
+  .upload-title {
+    font-size: 1.2rem;
+  }
+
+  .file-card {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+  }
+
+  .player-main-controls {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+  }
+
+  .playback-buttons {
+    justify-content: center;
+  }
+
+  .volume-control-group {
+    justify-content: flex-end;
+  }
+
+  .stems-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .stems-actions-group {
+    justify-content: space-between;
+  }
+
+  .stems-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .mixer-board {
+    grid-template-columns: 1fr;
+  }
+
+  .footer-inner {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 0.75rem;
+  }
+
+  .toast-container {
+    left: 1rem;
+    right: 1rem;
+    bottom: 1rem;
+  }
+
+  .toast {
+    min-width: unset;
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .btn {
+    padding: 0.5rem 0.85rem;
+    font-size: 0.82rem;
+  }
+
+  .format-badges {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.35rem;
+  }
+
+  .badge-tag {
+    text-align: center;
+  }
+
+  .stem-buttons-row {
+    flex-wrap: wrap;
+  }
+
+  .modal-content {
+    max-height: 95vh;
+  }
+}
