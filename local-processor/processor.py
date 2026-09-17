@@ -1,6 +1,6 @@
 """
 Open Song - Local Audio Processor Engine
-Versão: v.1.0.0
+Versão: v.1.0.1
 Gerencia a fila de separação de áudio, execução segura do Demucs,
 monitoramento de progresso e exportação de stems.
 """

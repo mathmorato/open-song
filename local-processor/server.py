@@ -18,7 +18,7 @@ from socketserver import ThreadingMixIn
 from pathlib import Path
 from processor import DemucsProcessor
 
-VERSION = "v.1.0.0"
+VERSION = "v.1.0.1"
 API_VERSION = "v1"
 DEFAULT_PORT = 8765
 DEFAULT_HOST = "127.0.0.1"
