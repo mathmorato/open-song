@@ -1,6 +1,6 @@
 """
 Open Song - Local Processor HTTP Server
-Versão: v.1.0.0
+Versão: v.1.0.3
 Servidor HTTP leve baseado na biblioteca padrão do Python com suporte a CORS,
 Range requests para streaming de áudio, upload multipart e empacotamento ZIP.
 """
@@ -18,7 +18,7 @@ from socketserver import ThreadingMixIn
 from pathlib import Path
 from processor import DemucsProcessor
 
-VERSION = "v.1.0.2"
+VERSION = "v.1.0.3"
 API_VERSION = "v1"
 DEFAULT_PORT = 8765
 DEFAULT_HOST = "127.0.0.1"

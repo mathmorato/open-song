@@ -1,6 +1,6 @@
 /**
  * Open Song - Configuração Centralizada
- * Versão: v.1.0.2
+ * Versão: v.1.0.3
  * Define endpoints, URL do processador local e configurações padrão.
  */
 
@@ -14,11 +14,11 @@ const OPEN_SONG_CONFIG = {
     downloadEndpoint: "/download",
     downloadZipEndpoint: "/download-zip",
     exportEndpoint: "/export",
-    version: "v.1.0.2",
+    version: "v.1.0.3",
     apiVersion: "v1",
     supportedFormats: ["mp3", "wav", "flac", "ogg"],
     defaultModel: "htdemucs",
-    defaultShifts: 10,
+    defaultShifts: 1,
     defaultOverlap: 0.25,
     storageKeys: {
         settings: "open_song_settings",

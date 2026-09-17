@@ -5,71 +5,72 @@
  */
 
 :root {
-  /* Color Palette - Dark Mode (Default) */
-  --bg-main: #0b0d13;
-  --bg-surface: #12151f;
-  --bg-card: #181c2b;
-  --bg-elevated: #20263a;
-  --bg-input: #10131d;
+  /* Color Palette - Dark Mode com tons azuis profundos (Padrão) */
+  --bg-main: #050814;          /* Azul petróleo muito escuro */
+  --bg-surface: #0a1124;       /* Azul marinho profundo */
+  --bg-card: #0f172e;          /* Navy slate escuro */
+  --bg-elevated: #18233c;      /* Navy intermediário */
+  --bg-input: #080d1a;
   
-  --border-subtle: #23293d;
-  --border-focus: #4f46e5;
-  --border-hover: #374151;
+  --border-subtle: #17233f;
+  --border-focus: #2563eb;     /* Azul royal vivo */
+  --border-hover: #26385e;
 
-  --text-primary: #f3f4f6;
-  --text-secondary: #9ca3af;
-  --text-muted: #6b7280;
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
 
-  --accent-primary: #6366f1;
-  --accent-primary-hover: #4f46e5;
-  --accent-primary-rgb: 99, 102, 241;
+  --accent-primary: #1d4ed8;       /* Azul escuro principal */
+  --accent-primary-hover: #1e40af; /* Azul navy mais escuro no hover */
+  --accent-primary-rgb: 29, 78, 216;
+  --accent-glow: rgba(29, 78, 216, 0.4);
 
   --color-success: #10b981;
   --color-warning: #f59e0b;
   --color-danger: #ef4444;
-  --color-info: #06b6d4;
+  --color-info: #38bdf8;
 
   /* Stem Accents */
-  --stem-vocals: #06b6d4;
+  --stem-vocals: #38bdf8;
   --stem-drums: #f59e0b;
-  --stem-bass: #a855f7;
-  --stem-other: #10b981;
+  --stem-bass: #818cf8;
+  --stem-other: #34d399;
 
   --radius-sm: 6px;
   --radius-md: 10px;
   --radius-lg: 16px;
   --radius-full: 9999px;
 
-  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.2);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.35);
-  --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.5);
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.35);
+  --shadow-md: 0 4px 14px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.7);
 
   --transition-fast: 150ms ease;
   --transition-base: 250ms ease;
 }
 
 [data-theme="light"] {
-  --bg-main: #f8fafc;
+  --bg-main: #f1f5f9;
   --bg-surface: #ffffff;
-  --bg-card: #f1f5f9;
-  --bg-elevated: #e2e8f0;
+  --bg-card: #e2e8f0;
+  --bg-elevated: #cbd5e1;
   --bg-input: #ffffff;
 
-  --border-subtle: #e2e8f0;
-  --border-focus: #4f46e5;
-  --border-hover: #cbd5e1;
+  --border-subtle: #cbd5e1;
+  --border-focus: #1d4ed8;
+  --border-hover: #94a3b8;
 
   --text-primary: #0f172a;
-  --text-secondary: #475569;
-  --text-muted: #94a3b8;
+  --text-secondary: #334155;
+  --text-muted: #64748b;
 
-  --accent-primary: #4f46e5;
-  --accent-primary-hover: #4338ca;
-  --accent-primary-rgb: 79, 70, 229;
+  --accent-primary: #1d4ed8;
+  --accent-primary-hover: #1e40af;
+  --accent-primary-rgb: 29, 78, 216;
 
-  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
-  --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.12);
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.15);
 }
 
 /* Reset & Box Sizing */
@@ -434,11 +435,49 @@ body {
   background-color: var(--bg-surface);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-lg);
-  padding: 2.5rem;
+  padding: 2.25rem 2rem;
   text-align: center;
   box-shadow: var(--shadow-md);
   max-width: 680px;
   margin: 0 auto;
+}
+
+/* Spinner Box com Ampulheta Girando */
+.processing-spinner-box {
+  width: 58px;
+  height: 58px;
+  margin: 0 auto 1.25rem;
+  background-color: rgba(var(--accent-primary-rgb), 0.15);
+  border: 1px solid rgba(var(--accent-primary-rgb), 0.3);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-info);
+  box-shadow: 0 0 20px rgba(var(--accent-primary-rgb), 0.25);
+}
+
+.animate-hourglass {
+  animation: hourglass-spin 2.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  transform-origin: center center;
+}
+
+@keyframes hourglass-spin {
+  0% {
+    transform: rotate(0deg) scale(1);
+  }
+  45% {
+    transform: rotate(180deg) scale(1.08);
+  }
+  50% {
+    transform: rotate(180deg) scale(1);
+  }
+  95% {
+    transform: rotate(360deg) scale(1.08);
+  }
+  100% {
+    transform: rotate(360deg) scale(1);
+  }
 }
 
 .progress-header {
@@ -449,14 +488,16 @@ body {
 }
 
 .progress-title {
-  font-size: 1.15rem;
-  font-weight: 600;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--text-primary);
 }
 
 .progress-pct {
-  font-size: 1.15rem;
-  font-weight: 700;
-  color: var(--accent-primary);
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--color-info);
+  font-family: monospace;
 }
 
 .progress-track {
@@ -466,20 +507,116 @@ body {
   border-radius: var(--radius-full);
   overflow: hidden;
   margin-bottom: 1.25rem;
+  border: 1px solid var(--border-subtle);
 }
 
 .progress-bar {
   height: 100%;
   width: 0%;
-  background: linear-gradient(90deg, var(--accent-primary), #a855f7);
+  background: linear-gradient(90deg, #1d4ed8, #38bdf8);
+  box-shadow: 0 0 10px rgba(56, 189, 248, 0.4);
   border-radius: var(--radius-full);
-  transition: width 0.3s ease;
+  transition: width 0.35s ease;
 }
 
 .progress-status-text {
   color: var(--text-secondary);
-  font-size: 0.9rem;
+  font-size: 0.92rem;
   margin-bottom: 1.5rem;
+  min-height: 1.5rem;
+}
+
+/* Etapas de Processamento com Certinho (Check) e Ampulheta */
+.processing-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 1.15rem 1.25rem;
+  margin-bottom: 1.75rem;
+  text-align: left;
+}
+
+.step-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  transition: all var(--transition-fast);
+}
+
+.step-bullet {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  flex-shrink: 0;
+  color: var(--text-muted);
+  transition: all var(--transition-fast);
+}
+
+.step-row .step-icon-done,
+.step-row .step-icon-active {
+  display: none;
+}
+
+/* Etapa Pendente */
+.step-row.pending {
+  color: var(--text-muted);
+}
+
+/* Etapa Ativa (Mostra Ampulheta Girando) */
+.step-row.active {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.step-row.active .step-bullet {
+  background-color: rgba(var(--accent-primary-rgb), 0.2);
+  border-color: var(--color-info);
+  color: var(--color-info);
+  box-shadow: 0 0 8px rgba(56, 189, 248, 0.35);
+}
+
+.step-row.active .step-icon-active {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+}
+
+/* Etapa Concluída (Mostra Certinho Verde) */
+.step-row.completed {
+  color: var(--text-secondary);
+}
+
+.step-row.completed .step-bullet {
+  background-color: rgba(16, 185, 129, 0.15);
+  border-color: var(--color-success);
+  color: var(--color-success);
+}
+
+.step-row.completed .step-icon-done {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+}
+
+.step-text {
+  flex: 1;
+}
+
+.step-badge-pct {
+  font-family: monospace;
+  font-size: 0.8rem;
+  color: var(--color-info);
+  font-weight: 700;
 }
 
 /* Modals */

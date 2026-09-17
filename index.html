@@ -108,6 +108,11 @@
 
     <!-- Painel de Progresso do Processamento -->
     <section id="processingPanel" class="processing-panel" style="display: none;" aria-live="polite">
+      <!-- Spinner com Ampulheta Girando -->
+      <div class="processing-spinner-box" aria-hidden="true">
+        <svg class="icon animate-hourglass" style="width: 32px; height: 32px;"><use href="assets/icons/icons.svg#icon-hourglass"></use></svg>
+      </div>
+
       <div class="progress-header">
         <div class="progress-title">Separando música</div>
         <div id="progressPct" class="progress-pct">0%</div>
@@ -119,6 +124,39 @@
 
       <div id="progressStatus" class="progress-status-text">
         Iniciando processamento com inteligência artificial...
+      </div>
+
+      <!-- Checklist de Etapas Concluídas -->
+      <div class="processing-steps" id="processingSteps">
+        <div class="step-row completed" id="stepUpload">
+          <span class="step-bullet">
+            <svg class="icon step-icon-done"><use href="assets/icons/icons.svg#icon-check"></use></svg>
+            <svg class="icon step-icon-active animate-hourglass"><use href="assets/icons/icons.svg#icon-hourglass"></use></svg>
+          </span>
+          <span class="step-text">Envio e validação do áudio</span>
+        </div>
+        <div class="step-row pending" id="stepInit">
+          <span class="step-bullet">
+            <svg class="icon step-icon-done"><use href="assets/icons/icons.svg#icon-check"></use></svg>
+            <svg class="icon step-icon-active animate-hourglass"><use href="assets/icons/icons.svg#icon-hourglass"></use></svg>
+          </span>
+          <span class="step-text">Carregamento do modelo IA (Demucs)</span>
+        </div>
+        <div class="step-row pending" id="stepSeparate">
+          <span class="step-bullet">
+            <svg class="icon step-icon-done"><use href="assets/icons/icons.svg#icon-check"></use></svg>
+            <svg class="icon step-icon-active animate-hourglass"><use href="assets/icons/icons.svg#icon-hourglass"></use></svg>
+          </span>
+          <span class="step-text">Separação de instrumentos e frequências</span>
+          <span class="step-badge-pct" id="stepSeparatePct"></span>
+        </div>
+        <div class="step-row pending" id="stepFinalize">
+          <span class="step-bullet">
+            <svg class="icon step-icon-done"><use href="assets/icons/icons.svg#icon-check"></use></svg>
+            <svg class="icon step-icon-active animate-hourglass"><use href="assets/icons/icons.svg#icon-hourglass"></use></svg>
+          </span>
+          <span class="step-text">Extração e disponibilização dos stems</span>
+        </div>
       </div>
 
       <button type="button" id="btnCancelProcess" class="btn btn-danger" title="Cancelar processamento atual">
@@ -241,7 +279,7 @@
         <span>Seu áudio é processado localmente. Os arquivos não são enviados automaticamente para servidores externos.</span>
       </div>
       <div class="footer-version">
-        Open Song <span id="appVersionFooter">v.1.0.2</span>
+        Open Song <span id="appVersionFooter">v.1.0.3</span>
       </div>
     </div>
   </footer>

@@ -1,6 +1,6 @@
 """
 Open Song - Local Audio Processor Engine
-Versão: v.1.0.2
+Versão: v.1.0.3
 Gerencia a fila de separação de áudio, execução segura do Demucs,
 monitoramento de progresso e exportação de stems.
 """
@@ -269,8 +269,14 @@ class DemucsProcessor:
         logger.info(f"Iniciando separação para Job {job.job_id}")
 
         model = job.options.get("model", "htdemucs")
-        shifts = str(job.options.get("shifts", 10))
+        # Otimização de performance: shifts=1 reduz o tempo em até 8x a 10x sem perda perceptível
+        shifts = str(job.options.get("shifts", 1))
         overlap = str(job.options.get("overlap", 0.25))
+        
+        # Paralelização multi-core com Demucs (-j)
+        cpu_cores = os.cpu_count() or 4
+        # Usa até metade dos núcleos lógicos para processamento ultra rápido sem engasgar o sistema operacional
+        jobs_count = str(min(6, max(2, cpu_cores // 2)))
         
         # Validação de segurança dos parâmetros
         if not re.match(r'^[a-zA-Z0-9_-]+$', model):
@@ -305,6 +311,7 @@ class DemucsProcessor:
             "-n", model,
             "--shifts", shifts,
             "--overlap", overlap,
+            "-j", jobs_count,
             "-o", job.output_dir,
             job.input_path
         ]

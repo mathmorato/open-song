@@ -55,6 +55,7 @@ const UiManager = {
             case UiState.PROCESSING:
                 if (uploadHero) uploadHero.style.display = "none";
                 if (processingPanel) processingPanel.style.display = "block";
+                this._resetProgressSteps();
                 if (btnSeparate) {
                     btnSeparate.disabled = true;
                     btnSeparate.textContent = "Separando sua música...";
@@ -110,14 +111,58 @@ const UiManager = {
         }
     },
 
+    _setStepState(elementId, state) {
+        const el = document.getElementById(elementId);
+        if (!el) return;
+        el.classList.remove("pending", "active", "completed");
+        el.classList.add(state);
+    },
+
+    _resetProgressSteps() {
+        this._setStepState("stepUpload", "completed");
+        this._setStepState("stepInit", "active");
+        this._setStepState("stepSeparate", "pending");
+        this._setStepState("stepFinalize", "pending");
+        const sepPct = document.getElementById("stepSeparatePct");
+        if (sepPct) sepPct.textContent = "";
+    },
+
     updateProgress(percent, message) {
         const bar = document.getElementById("progressBar");
         const pctEl = document.getElementById("progressPct");
         const statusEl = document.getElementById("progressStatus");
+        const sepPct = document.getElementById("stepSeparatePct");
 
         if (bar) bar.style.width = `${percent}%`;
         if (pctEl) pctEl.textContent = `${percent}%`;
         if (statusEl && message) statusEl.textContent = message;
+
+        // Atualização dinâmica dos passos com certinho nas etapas concluídas
+        if (percent < 10) {
+            this._setStepState("stepUpload", "completed");
+            this._setStepState("stepInit", "active");
+            this._setStepState("stepSeparate", "pending");
+            this._setStepState("stepFinalize", "pending");
+            if (sepPct) sepPct.textContent = "";
+        } else if (percent < 90) {
+            this._setStepState("stepUpload", "completed");
+            this._setStepState("stepInit", "completed");
+            this._setStepState("stepSeparate", "active");
+            this._setStepState("stepFinalize", "pending");
+            if (sepPct) sepPct.textContent = `${percent}%`;
+        } else if (percent < 100) {
+            this._setStepState("stepUpload", "completed");
+            this._setStepState("stepInit", "completed");
+            this._setStepState("stepSeparate", "completed");
+            this._setStepState("stepFinalize", "active");
+            if (sepPct) sepPct.textContent = "100%";
+        } else {
+            this._setStepState("stepUpload", "completed");
+            this._setStepState("stepInit", "completed");
+            this._setStepState("stepSeparate", "completed");
+            this._setStepState("stepFinalize", "completed");
+            if (sepPct) sepPct.textContent = "100%";
+        }
     },
 
     showToast(message, type = "info", duration = 3500) {
